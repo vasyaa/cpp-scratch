@@ -47,7 +47,8 @@ namespace Sum3 {
 
 }
 
-//template <typename ... T>
+//////////////////////////////////////////
+//template <typename ... Types>
 //struct list;
 
 template <typename ...Args>
@@ -64,7 +65,10 @@ struct list<T, Args...> {
     const T value;
     list<Args...> next;
 
-    explicit list(T v, Args... args):value(std::move(v)), next(args...) {}
+//    explicit list(T v, Args... args):value(std::move(v)), next(args...) {}
+
+    template <typename U>
+    list(U&& v, Args... args):value(std::forward<U>(v)), next(args...){}
 };
 
 template <typename ... Args>
@@ -76,8 +80,21 @@ list<Args...> make_list(Args... args) {
 
 // fibonacci
 
+namespace Is_Same {
 // template <typename A, typename B>
 // is_same
+template <typename T, typename U>
+struct is_same {
+    const bool value = false;
+};
+
+template <typename T>
+struct is_same<T, T> {
+    const bool value = true;
+//    enum {value2 = true};
+};
+
+}
 
 
 int main() {
@@ -97,19 +114,27 @@ int main() {
 //
 //    }
     {
-        int i = 100;
-        list <int, int, int, int, std::string> l(1,2,3, i, "asdf");
+        auto i = 100;
+        auto b = "qwerty";
+        list <int, int, int, int, std::string, std::string> l(1,2,3, i, "asdf", b);
         cout << l.value << " ";
         cout << l.next.value << " ";
         cout << l.next.next.value << " ";
         cout << l.next.next.next.value << " ";
         cout << l.next.next.next.next.value << endl;
+        cout << l.next.next.next.next.next.value << endl;
 //        cout << l.next.next.next.next.next << endl;
 
-        auto l2 = make_list(1,2);
+        auto l2 = make_list(1, 2, i, b);
         cout << l2.value << " ";
         cout << l2.next.value << " ";
+        cout << l2.next.next.value << " ";
+        cout << l2.next.next.next.value << " ";
+        std::cout << std::endl;
 
     }
+
+    std::cout << is_same<int, std::int32_t>::value << endl;
+    std::cout << is_same<int, long>::value << endl;
     return 0;
 }
