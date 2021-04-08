@@ -69,7 +69,7 @@ struct list<T, Args...> {
 
 template <typename ... Args>
 list<Args...> make_list(Args... args) {
-    return list<Args...>(args...);
+    return list<Args...>(std::forward<Args>(args)...);
 }
 
 // in_set
