@@ -1,4 +1,5 @@
 #include <iostream>
+#include <utility>
 using namespace std;
 
 // negate
@@ -55,7 +56,7 @@ struct list;
 template <typename T>
 struct list<T> {
     const T value;
-    list(const T& v): value(v) {}
+    explicit list(T  v): value(std::move(v)) {}
 };
 
 template <typename T, typename ...Args>
@@ -63,10 +64,13 @@ struct list<T, Args...> {
     const T value;
     list<Args...> next;
 
-    list(const T& v, Args... args):value(v), next(args...) {
-
-    }
+    explicit list(T v, Args... args):value(std::move(v)), next(args...) {}
 };
+
+template <typename ... Args>
+list<Args...> make_list(Args... args) {
+    return list<Args...>(args...);
+}
 
 // in_set
 
@@ -93,13 +97,18 @@ int main() {
 //
 //    }
     {
-        list <int, int, int, int, int> l(1,2,3,4,5);
+        int i = 100;
+        list <int, int, int, int, std::string> l(1,2,3, i, "asdf");
         cout << l.value << " ";
         cout << l.next.value << " ";
         cout << l.next.next.value << " ";
         cout << l.next.next.next.value << " ";
         cout << l.next.next.next.next.value << endl;
 //        cout << l.next.next.next.next.next << endl;
+
+        auto l2 = make_list(1,2);
+        cout << l2.value << " ";
+        cout << l2.next.value << " ";
 
     }
     return 0;
