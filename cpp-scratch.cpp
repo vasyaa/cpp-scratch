@@ -1,6 +1,12 @@
 #include <iostream>
 using namespace std;
 
+// negate
+
+// print - tempalte
+
+// print - fold function
+
 namespace Sum1 {
 //    template<typename... V>
 //    double sum(V... v);
@@ -26,7 +32,10 @@ namespace Sum3 {
 
 // in_set
 
-// fib
+// fibonacci
+
+// template <typename A, typename B>
+// is_same
 
 
 int main() {
