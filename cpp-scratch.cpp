@@ -29,9 +29,6 @@ namespace Sum1 {
 //    template<typename... V>
 //    double sum(V... v);
 
-// template <typename ... Args>
-// double sum(Args... args);
-
 template <typename T>
 double sum(T t) {
     return t;
@@ -63,8 +60,26 @@ template <int v>
 struct sum<v> {
     static const int value = v;
 };
+}
 
+namespace Sum4 {
 
+template <typename ...Args>
+auto sum(Args... args) {
+    return (args + ...);
+}
+
+}
+
+namespace Sum5 {
+
+template <typename T>
+auto sum(const std::initializer_list<T>& l) {
+    T t{};
+    for(auto& i : l) {
+        t += i;
+    }
+}
 
 }
 
@@ -145,6 +160,50 @@ struct is_same<T, T> {
 
 }  // namespace Is_Same
 
+
+namespace List2 {
+
+template <typename ...Args>
+struct list;
+
+template <typename T>
+struct list<T> {
+    explicit list(const T& t):value(t) {}
+    const T value;
+
+    size_t size() {
+        return 1;
+    }
+};
+
+template <typename T, typename ...Args>
+struct list<T, Args...> {
+    explicit list(T t, Args... args):value(t),next(args...) {}
+    const T value;
+    list<Args...> next;
+
+    size_t size() {
+        return next.size() + 1;
+    }
+};
+
+template <typename ...Args>
+auto make_list(Args... args) {
+    return list<Args...>(args...);
+}
+
+}
+
+template <typename T>
+struct is_integer {
+    static const bool value = false;
+};
+
+template <>
+struct is_integer<int> {
+    static const bool value = true;
+};
+
 int main() {
 //    {
 //        auto p = "asdfgh";
@@ -160,6 +219,11 @@ int main() {
             cout << n << endl;
             static_assert(Sum3::sum<1, 2, 3, 4, 5>::value == 15, "Value should be 15");
         }
+    {
+        auto n = Sum4::sum(1, 2, 3, 4, 5);
+        cout << n << endl;
+//        assert(n == 15);
+    }
     {
         auto i = 100;
         auto b = "qwerty";
@@ -190,5 +254,18 @@ int main() {
 
     std::cout << is_same<int, std::int32_t>::value << endl;
     std::cout << is_same<int, long>::value << endl;
+
+    {
+        List2::list<int, std::string> l(1, "asasasa");
+
+        auto l2 = List2::make_list(1,2,3,4, "asasasa");
+        std::cout << l2.next.next.value << std::endl;
+    }
+
+    {
+        cout << is_integer<long>::value << std::endl;
+        cout << is_integer<short>::value << std::endl;
+        cout << is_integer<int>::value << std::endl;
+    }
     return 0;
 }
